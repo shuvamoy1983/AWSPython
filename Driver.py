@@ -1,4 +1,4 @@
-from IAM.Chap_IAM import *
+from IAM.Chap1_IAM import *
 import json
 import datetime
 from dateutil.tz import tzutc
