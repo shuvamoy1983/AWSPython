@@ -2,12 +2,15 @@ from IAM.Chap1_IAM import *
 import json
 import datetime
 from dateutil.tz import tzutc
+import time
+
 
 if __name__ == '__main__':
-    print("Creating group" ,create_group("ItDeveloper"))
-    response = Create_User("Sumit")
-    print("List of Users:" ,listOfUsers())
-    print("User update",updateUser("Sumit","Sumit1"))
-    print("Added user to group" ,addUserToGrp("ItDeveloper","Sumit1"))
-    #k, l = deleteUser("Sumit1")
-    #print("User delete", k, l)
+    src = IamOperation("Sumit","ItDeveloper")
+    src.Create_User()
+    src.create_group()
+    src.addUserToGrp()
+    print("Remove",src.removeUserFromGroup())
+    print("Delete group",src.delete_group())
+    print("User Deleted",src.deleteUser())
+
