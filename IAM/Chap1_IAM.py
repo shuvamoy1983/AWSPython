@@ -1,16 +1,19 @@
 from Resource.ResouceSelection import *
 import os
 import sys
+import json
 
 class IamOperation:
     ##static variable
     iam = resource_name("IAM")
 
     ## initialize class variable
-    def __init__(self,User,Group,NewUser):
+    def __init__(self,User,Group,NewUser,PolicyName,Policy):
         self.user=User
         self.grp=Group
         self.Nuser=NewUser
+        self.PolicyNM=PolicyName
+        self.Policy_dtls = Policy
 
 ##How to create user in aws IAM
     def Create_User(self):
@@ -67,3 +70,12 @@ class IamOperation:
         response = IamOperation.iam.delete_group(GroupName=self.grp)
         print(type(response))
         return response
+
+    def create_policy(self):
+        response = IamOperation\
+            .iam.create_policy(PolicyName=self.PolicyNM,
+                               PolicyDocument=json.dumps(self.Policy_dtls))
+
+        print(response)
+        return response
+
