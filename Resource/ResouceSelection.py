@@ -18,5 +18,11 @@ def resource_name(a):
          src = boto.ec2.elb.connect_to_region('us-east-1')
          return src
 
+     elif a.lower() == 'cloudformation':
+         print("cloudformation resource selected")
+         config = None
+         src=boto3.client(a.lower())
+         return src
+
      else:
          print('No Resource choosen')
