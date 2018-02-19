@@ -20,7 +20,7 @@ class CloudFormation:
 
     def cf_create_stack(self,file):
         CloudFormation.cl.create_stack(
-            StackName='mystack4',
+            StackName='mystack5',
             TemplateBody=file,
             Parameters=[{
                 'ParameterKey': 'InstanceType',
@@ -42,7 +42,7 @@ class CloudFormation:
 
 
 if __name__ == '__main__':
-    obj=CloudFormation("single_instance1.json")
+    obj=CloudFormation("/Users/shuvamoymondal/PycharmProjects/AWSPython/single_instance1.json")
     obj.cf_create_stack(obj.file_local_read())
 
 
