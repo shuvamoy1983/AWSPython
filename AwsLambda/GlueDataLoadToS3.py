@@ -18,7 +18,8 @@ job.init(args['JOB_NAME'], args)
 ## @args: [database = "mytestjob", table_name = "source_buc", transformation_ctx = "datasource0"]
 ## @return: datasource0
 ## @inputs: []
-datasource0 = glueContext.create_dynamic_frame.from_catalog(database = "mytestjob", table_name = "source_buc", transformation_ctx = "datasource0")
+datasource0 = glueContext.create_dynamic_frame.from_catalog(database = "mydb", table_name = "test_csv", transformation_ctx = "datasource0")
+
 ## @type: ApplyMapping
 ## @args: [mapping = [("months", "string", "months", "string"), ("eggs", "long", "eggs", "long"), ("salt", "long", "salt", "long"), ("spam", "long", "spam", "long")], transformation_ctx = "applymapping1"]
 ## @return: applymapping1
