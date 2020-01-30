@@ -1,0 +1,27 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: >
+
+
+Metadata:
+
+Parameters:
+
+Mappings:
+
+Conditions:
+
+Resources:
+  vpc_name: MyVpcDemo
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.1/16     # required
+      EnableDnsHostnames: Boolean     # optional
+      EnableDnsSupport: Boolean     # optional
+      InstanceTenancy: String     # optional
+      Tags:                # optional, list of Tag
+        - Key: Name     # optional
+        Value: VpcDemo     # optional
+
+Outputs:

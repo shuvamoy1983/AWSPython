@@ -1,0 +1,166 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "",
+  "Metadata": {
+  },
+  "Parameters": {
+  },
+  "Mappings": {
+  },
+  "Conditions": {
+  },
+  "Resources": {
+     "MyEc2": {
+       "Type": "AWS::EC2::Instance",
+       "Properties": {
+           "KeyName": "MyKey",
+           "ImageId": "ami-087c2c50437d0b80d",
+           "InstanceType": "t2.micro",
+           "Tags": [
+             {
+               "Key": "mydemoKey",
+               "Value": "ResourceDemo"
+             }
+           ],
+           "NetworkInterfaces": [
+                {
+                    "SubnetId": {"Ref": "PublicSubnet"},
+                    "AssociatePublicIpAddress": "true",
+                    "DeviceIndex": "0",
+                    "GroupSet": [{ "Ref" : "WebServerSecurityGroup" }]
+                }
+            ]
+   }},
+    "VPC": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "EnableDnsSupport": "true",
+        "EnableDnsHostnames": "true",
+        "CidrBlock": "10.0.0.0/16",
+        "Tags": [
+          {
+            "Key": "mydemoKey",
+            "Value": "ResourceDemo"
+          }
+        ]
+      }
+    },
+    "PublicSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "CidrBlock": "10.0.10.0/24",
+        "AvailabilityZone": {
+                "Fn::Select": [
+                    0,
+                    {
+                        "Fn::GetAZs": ""
+                    }
+                ]
+            },
+        "Tags": [
+          {
+            "Key": "mydemoKey",
+            "Value": "ResourceDemo"
+          }
+        ]
+      }
+    },
+    "InternetGateway": {
+      "Type": "AWS::EC2::InternetGateway"
+    },
+    "VPCGatewayAttachment": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "InternetGatewayId": {
+          "Ref": "InternetGateway"
+        }
+      }
+    },
+    "PublicRouteTable": {
+    "Type": "AWS::EC2::RouteTable",
+    "Properties": {
+      "VpcId": {
+        "Ref": "VPC"
+      },
+      "Tags": [
+        {
+          "Key": "mydemoKey",
+          "Value": "ResourceDemo"
+        }
+      ]
+  }
+},
+  "PublicRoute" : {
+     "Type" : "AWS::EC2::Route",
+     "DependsOn" : "VPCGatewayAttachment",
+     "Properties" : {
+      "RouteTableId" : { "Ref" : "PublicRouteTable" },
+      "DestinationCidrBlock" : "0.0.0.0/0",
+      "GatewayId" : { "Ref" : "InternetGateway" }
+  }
+},
+   "routeTableAssocName": {
+     "Type": "AWS::EC2::SubnetRouteTableAssociation",
+     "Properties": {
+       "SubnetId": { "Ref" : "PublicSubnet" },
+       "RouteTableId": { "Ref" : "PublicRouteTable" }
+     }
+   },
+   "PublicSubnetNetworkAclAssociation" : {
+     "Type" : "AWS::EC2::SubnetNetworkAclAssociation",
+     "Properties" : {
+        "SubnetId" : { "Ref" : "PublicSubnet" },
+        "NetworkAclId" : { "Fn::GetAtt" : ["VPC", "DefaultNetworkAcl"] }
+     }
+   },
+   "WebServerSecurityGroup" : {
+     "Type" : "AWS::EC2::SecurityGroup",
+     "Properties" : {
+       "GroupDescription" : "Enable HTTP ingress",
+       "SecurityGroupIngress" : [{
+         "IpProtocol" : "tcp",
+         "FromPort" : "80",
+         "ToPort" : "80",
+         "CidrIp" : "0.0.0.0/0"
+       },
+         {
+           "IpProtocol": "tcp",
+           "CidrIp": "0.0.0.0/0",
+           "FromPort": "22",
+           "ToPort": "22"
+         }],
+       "VpcId" : { "Ref" : "VPC" },
+       "Tags": [
+         {
+           "Key": "mydemoKey",
+           "Value": "ResourceDemo"
+         }
+       ]
+     }
+   }
+  },
+    "Outputs": {
+      "VPCId" : {
+      "Description" : "VPC ID",
+      "Value" :  { "Ref" : "VPC" },
+      "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-VPCID" }}
+    },
+    "PublicSubnet" : {
+      "Description" : "The subnet ID to use for public web servers",
+      "Value" :  { "Ref" : "PublicSubnet" },
+      "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetID" }}
+    },
+      "WebServerSecurityGroup" : {
+      "Description" : "The security group ID to use for public web servers",
+      "Value" :  { "Fn::GetAtt" : ["WebServerSecurityGroup", "GroupId"] },
+      "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-SecurityGroupID" }}
+    }
+    }
+  }
+

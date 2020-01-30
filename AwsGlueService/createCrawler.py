@@ -48,17 +48,45 @@ class AwsGlueJobCreation(object):
             }
         )
 
+    def startCrawlar(self):
+         response = AwsGlueJobCreation.client.start_crawler(
+             Name=self.crawlerName
+         )
+
+    def addJob(self):
+        job = AwsGlueJobCreation.client.create_job(
+            Name='forum',
+            Role=self.arnForRole,
+            Command={
+                'Name': 'glueetl',
+                'ScriptLocation': 's3://etlscript/etl.py', ## this is your spark code to place in s3
+                'PythonVersion': '3'
+            },
+            GlueVersion='1.0',
+            Timeout=2880,
+            MaxCapacity=10
+        )
+
+    def runJob(self):
+        response = AwsGlueJobCreation.client.start_job_run(
+            JobName='forum')
+
+
+
 
 if __name__== '__main__' :
     gl=AwsGlueJobCreation('mydb','rawData',
-                          'arn:aws:iam::655700:role/s3glueserviceRole',
-                          'arn:aws:s3:::source-buc/test.csv')
+                          'arn:aws:iam::6557009:role/s3glueserviceRole',
+                          's3://source-buc/test.csv')
     if gl.getDataBaseName() == 400:
         gl.createDatabase()
     else:
         print("Database " + gl.getDataBaseName().get('Database')['Name']+ " Already present")
 
     gl.createCrawlar()
+    gl.startCrawlar()
+    gl.addJob()
+    gl.runJob()
 
 
 
